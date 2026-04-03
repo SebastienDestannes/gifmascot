@@ -176,7 +176,7 @@ int main(int argc, char **argv)
         processEvent(display, window, config);
         memcpy(image, gifImages[frame_count], width * height * 4);
         XShmPutImage(display, window, gc, ximage, 0, 0, 0, 0, width, height, False);
-		usleep(config.delta * 1000000);
+		usleep(gif->gce.delay * 10000);
 		frame_count++;
     }
 }
