@@ -79,7 +79,7 @@ unsigned char** createGifImages(gd_GIF *gif, int n_frames) {
         gd_render_frame(gif, frame);
         uint8_t *p = image;
         uint8_t *color = frame;
-        for (int i = 0; i < gif->height * gif->width; i++) {
+        for (int j = 0; j < gif->height * gif->width; j++) {
             if (!gd_is_bgcolor(gif, color)) {
                 *p++=color[2]; // blue
                 *p++=color[1]; // green
@@ -130,18 +130,16 @@ void CreateTransparentWindow(t_config config, Display** display, XVisualInfo* vi
     XMatchVisualInfo(*display, DefaultScreen(*display), 32, TrueColor, vinfo);
     Colormap colormap = XCreateColormap(*display, RootWindow(*display, 0), vinfo->visual, AllocNone);
     XSetWindowAttributes attrs = { .colormap = colormap, .border_pixel = 0, .background_pixel = 0 };
-    *window = XCreateWindow(*display, RootWindow(*display, 0),
-        config.x, config.y, width, height, 0,
-        vinfo->depth, InputOutput, vinfo->visual,
-        CWColormap | CWBorderPixel | CWBackPixel, &attrs);
+    *window = XCreateWindow(*display, RootWindow(*display, 0), config.x, config.y, width, height, 0,
+        vinfo->depth, InputOutput, vinfo->visual, CWColormap | CWBorderPixel | CWBackPixel, &attrs);
     struct { unsigned long flags, functions, decorations; long input_mode; unsigned long status; } hints = {2, 0, 0, 0, 0};
     Atom motif_hints = XInternAtom(*display, "_MOTIF_WM_HINTS", False);
     Atom wm_state = XInternAtom(*display, "_NET_WM_STATE", False);
     Atom wm_state_above = XInternAtom(*display, "_NET_WM_STATE_ABOVE", False);
-    XChangeProperty(*display, *window, wm_state, XA_ATOM, 32,
-        PropModeReplace, (uint8_t *)&wm_state_above, 1);
-    XChangeProperty(*display, *window, motif_hints, motif_hints, 32,
-        PropModeReplace, (uint8_t *)&hints, 5);
+    Atom skip_taskbar = XInternAtom(*display, "_NET_WM_STATE_SKIP_TASKBAR", False);
+    XChangeProperty(*display, *window, wm_state, XA_ATOM, 32, PropModeReplace, (uint8_t *)&wm_state_above, 1);
+    XChangeProperty(*display, *window, wm_state, XA_ATOM, 32, PropModeAppend, (uint8_t *)&skip_taskbar, 1);
+    XChangeProperty(*display, *window, motif_hints, motif_hints, 32, PropModeReplace, (uint8_t *)&hints, 5);
     XSelectInput(*display, *window, ButtonPressMask|ExposureMask|KeyPressMask);
     XMapWindow(*display, *window);
     XSizeHints posHints = { .flags = PPosition, .x = config.x, .y = config.y };
