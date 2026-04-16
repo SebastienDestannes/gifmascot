@@ -16,7 +16,7 @@ t_config LoadConfigFile(Display *dpy, uint32_t gif_w, uint32_t gif_h) {
       t_coord pos = GetFrameGeometry(dpy, term, &tw, &th);    
       int scale = 2;
       conf.x = (pos.x / scale) + (int)(tw / scale) - (int)gif_w / 2;
-      conf.y = (pos.y / scale) + 23 - (int)gif_h; //23 c'est la taille de la barre d'outil
+      conf.y = (pos.y / scale) + 23 - (int)gif_h; // 23 c'est la taille de la barre d'outil
     }
     // Créer le dossier si besoin et sauvegarder immédiatement
     t_coord coord = {conf.x, conf.y};
@@ -36,9 +36,9 @@ void UpdateConfigFile(t_config conf, t_coord coord) {
   char buf[50];
   if (!fp)
     return;
-  sprintf(buf, "%d\n", coord.x);
+  sprintf(buf, "%d\n", coord.x / 2);
   fputs(buf, fp);
-  sprintf(buf, "%d\n", coord.y);
+  sprintf(buf, "%d\n", coord.y / 2);
   fputs(buf, fp);
   fclose(fp);
   printf("Updated config!\n");
