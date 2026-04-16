@@ -11,16 +11,23 @@ int main(int argc, char **argv) {
   }
 
   uint32_t width = gif->width, height = gif->height;
-  t_config config = LoadConfigFile();
+
+  // Un seul XOpenDisplay, partagé par tout le programme
+  Display *dpy = XOpenDisplay(NULL);
+  if (!dpy) {
+    fprintf(stderr, "Cannot open X display\n");
+    return 1;
+  }
+
+  t_config config = LoadConfigFile(dpy, width, height);
   uint32_t n_frames = CountGifFrames(gif);
   uint8_t **gifImages = CreateGifImages(gif, n_frames);
-  Display *dpy = XOpenDisplay(NULL);
+
   GC gc;
   XVisualInfo vinfo;
-  Window window = CreateTransparentWindow(config, &dpy, &vinfo, &gc, width, height);
+  Window window = CreateTransparentWindow(config, dpy, &vinfo, &gc, width, height);
   Window root = DefaultRootWindow(dpy);
   Window menu = CreateMenuWindow(dpy, root);
-  // Menu window (initially hidden via XUnmapWindow)
   XImage *ximage =
       CreatePixmapImage(dpy, vinfo.visual, (void **)&image, width, height);
 

@@ -34,16 +34,21 @@ void DrawRightClickMenu(Display *dpy, Window menu, GC gc,
 XImage *CreatePixmapImage(Display *display, Visual *visual, void **data,
                           int width, int height);
 t_coord GetWindowPos(Display *display, Window window);
+t_coord GetWindowGeometry(Display *dpy, Window win);
+Window GetParentTerminalWindow(Display *dpy);
+t_coord GetFrameGeometry(Display *dpy, Window win,
+                         unsigned int *out_w, unsigned int *out_h);
 void ProcessEvent(Display *display, Window window, t_config config);
-Window CreateTransparentWindow(t_config config, Display **display,
-                             XVisualInfo *vinfo, GC *gc,
-                             int width, int height);
+Window CreateTransparentWindow(t_config config, Display *display,
+                               XVisualInfo *vinfo, GC *gc,
+                               int width, int height);
+
 // gif_helpers.c
 uint32_t CountGifFrames(gd_GIF *gif);
 unsigned char **CreateGifImages(gd_GIF *gif, int n_frames);
 
 // config.c
-t_config LoadConfigFile();
+t_config LoadConfigFile(Display *dpy, uint32_t gif_w, uint32_t gif_h);
 void UpdateConfigFile(t_config conf, t_coord coord);
 
 // menuwindow.c
